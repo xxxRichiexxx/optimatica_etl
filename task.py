@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from urllib.parse import quote
 import time
 import datetime as dt
-from pprint import pprint 
+
 
 
 engine = sa.create_engine(
@@ -15,6 +15,306 @@ engine = sa.create_engine(
 base_url ='https://gaz.optimatica.ru/api/v2/'
 
 
+data_fields = {
+    'YearPlan': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.Dealer.Text",
+            "Data.Data.DealerCity.Text",
+            "Data.Data.DealerLegalAddress.Text",
+            "Data.Data.Year.Text",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Specialization.Text",
+            "Data.Data.ZoneAM.Text",
+            "Data.Data.RegionalSalesManager.Text",
+            "Data.Data.MinimumBudget.Value",
+            "Data.Data.PlanBudget.Value",
+            "Data.Data.FactBudget.Value",
+            "Data.Data.Budget.Value",
+            "Data.Data.YearPlanItems.Text",
+            "WorkFlow.State.Name",
+            "WorkFlow.Deadline",
+            "WorkFlow.Activity",
+        ],
+        'new_name':[
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "Dealer",
+            "DealerCity",
+            "DealerLegalAddress",
+            "Year",
+            "PeriodFrom",
+            "PeriodTo",
+            "Specialization",
+            "ZoneAM",
+            "RegionalSalesManager",
+            "MinimumBudget",
+            "PlanBudget",
+            "FactBudget",
+            "Budget",
+            "YearPlanItems",
+            "State",
+            "Deadline",
+            "Activity",
+        ],
+    },
+    'QuarterPlan': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.Dealer.Text",
+            "Data.Data.DealerCity.Text",
+            "Data.Data.Quarter.Text",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Specialization.Text",
+            "Data.Data.ZoneAM.Text",
+            "Data.Data.RegionalSalesManager.Text",
+            "Data.Data.PlanBudget.Value",
+            "Data.Data.YearPlanQuarterBudget.Value",
+            "Data.Data.QuarterPlanItems.Text",
+            "WorkFlow.State.Name",
+            "WorkFlow.Deadline",
+            "WorkFlow.Activity",
+        ],
+        'new_name':[
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "Dealer",
+            "DealerCity",
+            "Quarter",
+            "PeriodFrom",
+            "PeriodTo",
+            "Specialization",
+            "ZoneAM",
+            "RegionalSalesManager",
+            "PlanBudget",
+            "QuarterBudget",
+            "QuarterPlanItems",
+            "State",
+            "Deadline",
+            "Activity",
+        ],
+    },
+    'MinimumBudget': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.Dealer.Text",
+            "Data.Data.DealerCity.Text",
+            "Data.Data.Year.Text",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Specialization.Text",
+            "Data.Data.ZoneAM.Text",
+            "Data.Data.RegionalSalesManager.Text",
+            "Data.Data.TotalBudget.Value",
+        ],
+        'new_name':[
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "Dealer",
+            "DealerCity",
+            "Year",
+            "PeriodFrom",
+            "PeriodTo",
+            "Specialization",
+            "ZoneAM",
+            "RegionalSalesManager",
+            "TotalBudget",
+        ],
+    },
+    'YearPlanItem': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.Month.Text",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Media.Text",
+            "Data.Data.Model.Text",
+            "Data.Data.TotalPrice.Value",
+            "Data.Data.YearPlan.Value"
+        ],
+        'new_name': [
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "Month",
+            "PeriodFrom",
+            "PeriodTo",
+            "Media",
+            "Model",
+            "TotalPrice",
+            "Plan_Id"
+        ],
+    },
+    'QuarterPlanItem': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Model.Text",
+            "Data.Data.Media.Text",
+            "Data.Data.Description.Text",
+            "Data.Data.Price.Value",
+            "Data.Data.QuarterPlanObject.Value",
+        ],
+        'new_name': [
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "PeriodFrom",
+            "PeriodTo",
+            "Model",
+            "Media",
+            "Description",
+            "Price",
+            "QuarterPlan_Id",
+        ],
+    },
+    'Placement': {
+        'old_name': [
+            "Id",
+            "Number",
+            "ObjectType.Code",
+            "ObjectType.Name",
+            "ObjectClass.Code",
+            "ObjectClass.Name",
+            "Status.CreatedAt",
+            "Status.CreatedBy.Name",
+            "Status.Deleted",
+            "Status.Frozen",
+            "Data.Data.Dealer.Text",
+            "Data.Data.DateRange.Value.PeriodFrom",
+            "Data.Data.DateRange.Value.PeriodTo",
+            "Data.Data.Specialization.Text",
+            "Data.Data.ZoneAM.Text",
+            "Data.Data.RegionalSalesManager.Text",
+            "Data.Data.Media.Text",
+            "Data.Data.Model.Text",
+            "Data.Data.Site.Text",
+            "Data.Data.Description.Text",
+            "Data.Data.PublishCount.Value",
+            "Data.Data.MeasureUnit.Value",
+            "Data.Data.QuarterPlanItemRef.Text",
+            "Data.Data.Price.Value",
+            "WorkFlow.State.Name",
+            "WorkFlow.Deadline",
+            "WorkFlow.Activity",
+        ],
+        'new_name':[
+            "Id",
+            "Number",
+            "ObjectType_Code",
+            "ObjectType_Name",
+            "ObjectClass_Code",
+            "ObjectClass_Name",
+            "CreatedAt",
+            "CreatedBy",
+            "Deleted",
+            "Frozen",
+            "Dealer",
+            "PeriodFrom",
+            "PeriodTo",
+            "Specialization",
+            "ZoneAM",
+            "RegionalSalesManager",
+            "Media",
+            "Model",
+            "Site",
+            "Description",
+            "PublishCount",
+            "MeasureUnit",
+            "QuarterPlanItemRef",
+            "Price",
+            "State",
+            "Deadline",
+            "Activity",
+        ],
+    },
+}
 
 
 
@@ -37,22 +337,15 @@ def get_token():
 
 
 
-def write_data(data, table, id_field):
+def write_data(data, table, period_from, period_to):
 
     print('Обеспечение идемпотентности')
-
-    ids_for_del = tuple(set(data[id_field].values))
-
-    if len(ids_for_del) > 1:
-        query_tail = f'IN {ids_for_del}'
-    else:
-        query_tail = f' = {ids_for_del[0]}'
 
     pd.read_sql_query(
         f"""
         DELETE FROM sttgaz.{table}
-        WHERE "{id_field}" 
-        """ + query_tail,
+        WHERE "PeriodFrom" >= '{period_from}' AND "PeriodTo" <= '{period_to}'
+        """,
         engine
     )
 
@@ -67,7 +360,7 @@ def write_data(data, table, id_field):
     )
 
 
-def get_budgets(PeriodFrom, PeriodTo):
+def get_data(period_from, period_to, data_type):
 
     url = base_url + 'business-objects/query'
 
@@ -76,10 +369,11 @@ def get_budgets(PeriodFrom, PeriodTo):
     }
 
     data = {
+        "ObjectType": data_type,
         "FieldMatch": {
             "Data.DateRange": {
-                    "PeriodFrom": PeriodFrom,
-                    "PeriodTo": PeriodTo
+                    "PeriodFrom": period_from,
+                    "PeriodTo": period_to
             }
         }
     }
@@ -87,159 +381,22 @@ def get_budgets(PeriodFrom, PeriodTo):
     response = requests.post(url, headers=headers, verify=False, json=data)
     response.raise_for_status()
 
-    data = response.json()
+    data = pd.json_normalize(response.json())
 
-    budgets = pd.json_normalize(data)
+    data = data[data_fields[data_type]['old_name']]
 
-    budgets = budgets[[
-        "Id",
-        "Number",
-        "ObjectType.Code",
-        "ObjectType.Name",
-        "ObjectClass.Code",
-        "ObjectClass.Name",
-        "Status.CreatedAt",
-        "Status.CreatedBy.Name",
-        "Status.Deleted",
-        "Status.Frozen",
-        "Data.Data.Dealer.Text",
-        "Data.Data.DealerCity.Text",
-        "Data.Data.DealerLegalAddress.Text",
-        "Data.Data.Year.Text",
-        "Data.Data.DateRange.Value.PeriodFrom",
-        "Data.Data.DateRange.Value.PeriodTo",
-        "Data.Data.Specialization.Text",
-        "Data.Data.ZoneAM.Text",
-        "Data.Data.RegionalSalesManager.Text",
-        "Data.Data.MinimumBudget.Value",
-        "Data.Data.PlanBudget.Value",
-        "Data.Data.FactBudget.Value",
-        "Data.Data.Budget.Value",
-        "Data.Data.YearPlanItems.Text",
-        "WorkFlow.State.Name",
-        "WorkFlow.Deadline",
-        "WorkFlow.Activity",
-    ]]
+    data.columns = data_fields[data_type]['new_name']
 
-    budgets.columns = [
-        "Id",
-        "Number",
-        "ObjectType_Code",
-        "ObjectType_Name",
-        "ObjectClass_Code",
-        "ObjectClass_Name",
-        "CreatedAt",
-        "CreatedBy",
-        "Deleted",
-        "Frozen",
-        "Dealer",
-        "DealerCity",
-        "DealerLegalAddress",
-        "Year",
-        "PeriodFrom",
-        "PeriodTo",
-        "Specialization",
-        "ZoneAM",
-        "RegionalSalesManager",
-        "MinimumBudget",
-        "PlanBudget",
-        "FactBudget",
-        "Budget",
-        "YearPlanItems",
-        "State",
-        "Deadline",
-        "Activity",    
-    ]
+    data['ts'] = dt.datetime.now()
 
-    budgets['ts'] = dt.datetime.now()
+    if data_type == 'YearPlanItem':
+        data['Plan_Id'] = data['Plan_Id'].apply(lambda value: value[0]['Id'])
+    elif data_type == 'QuarterPlanItem':
+        data['QuarterPlan_Id'] = data['QuarterPlan_Id'].apply(lambda value: value[0]['Id'])
 
-    print(budgets)
+    print(data)
 
-    write_data(budgets, 'stage_optimatica_budgets', 'Id')
-
-
-    budget_items = []
-
-    for budget in data:
-        try:
-            budget_item = pd.json_normalize(
-                budget,
-                record_path=["Data", "Data.YearPlanItems", "Value"],
-                meta=["Id"],
-                meta_prefix='budget_'
-            )
-            budget_items.append(budget_item)
-        except KeyError:
-            continue
-
-    budget_items = pd.concat(budget_items, ignore_index=True)
-
-    print(budget_items)
-
-    budget_items['ts'] = dt.datetime.now()
-
-    write_data(budget_items, 'stage_optimatica_budget_items', 'budget_Id')
-
-
-def get_items(PeriodFrom, PeriodTo):
-    
-    items_ids = pd.read_sql(
-        f"""
-        SELECT bi.Id FROM sttgaz.stage_optimatica_budgets AS b
-        JOIN sttgaz.stage_optimatica_budget_items AS bi
-            ON b.Id = bi.budget_Id
-        WHERE b.PeriodFrom = '{PeriodFrom}' AND b.PeriodTo = '{PeriodTo}'
-        """,
-        engine
-    )
-
-    url = base_url + 'business-objects/query'
-    headers = {
-        'Authorization': f'Bearer {get_token()}'
-    }
-    json = {
-        "Ids": list(items_ids['Id'].values)
-    }
-    
-    response = requests.post(url, headers=headers, verify=False, json=json)
-    response.raise_for_status()
-
-    items = pd.json_normalize(
-        response.json(),
-        record_path=["Data", "Data.YearPlan", "Value"],
-        record_prefix='Budget.',
-        meta=[
-            "Id",
-            "Number",
-            "Status.CreatedAt",
-            "Status.CreatedBy.Name",
-            "Data.Data.Month.Text",
-            "Data.Data.Media.Text",
-            "Data.Data.Model.Text",
-            "Data.Data.TotalPrice.Value",
-        ],
-        errors='ignore',
-    )
-
-    items.columns = [
-        "Budget_Id",
-        "Budget_Type_Name",
-        "Budget_Type_Code",
-        "Budget_Class_Code",
-        "Id",
-        "Number",
-        "CreatedAt",
-        "CreatedBy_Name",
-        "Month",
-        "Media",
-        "Model",
-        "TotalPrice",
-    ]
-
-    print(items)
-              
-
-
+    write_data(data, f'stage_optimatica_{data_type}', period_from, period_to)
 
 
 
@@ -247,7 +404,10 @@ def get_items(PeriodFrom, PeriodTo):
 
 start_time = time.time()
 
-# get_budgets("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00")
-get_items("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00")
+# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlan')
+# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'MinimumBudget')
+# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlanItem')
+# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'QuarterPlanItem')
+get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'Placement')
 
 print('Вренмя выполнения', time.time() - start_time)
