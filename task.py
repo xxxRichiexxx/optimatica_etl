@@ -6,16 +6,11 @@ import time
 import datetime as dt
 
 
-
-
-
 engine = sa.create_engine(
     f"""vertica+vertica_python://shveynikovab:{quote('s@vy7hSA')}@vs-da-vertica:5433/sttgaz"""
 )
 
-
 base_url ='https://gaz-marketing.ru/api/v2/'
-
 
 data_fields = {
     'YearPlan': {
@@ -338,7 +333,6 @@ def get_token():
         raise Exception('API не вернуло токен.')
 
 
-
 def write_data(data, table, period_from, period_to):
 
     print('Обеспечение идемпотентности')
@@ -346,7 +340,7 @@ def write_data(data, table, period_from, period_to):
     pd.read_sql_query(
         f"""
         DELETE FROM sttgaz.{table}
-        WHERE "PeriodFrom" >= '{period_from}' AND "PeriodTo" <= '{period_to}'
+        WHERE "CreatedAt" >= '{period_from}' AND "CreatedAt" <= '{period_to}'
         """,
         engine
     )
@@ -361,6 +355,21 @@ def write_data(data, table, period_from, period_to):
         index=False,
     )
 
+    initial_data_volume = len(data)
+    recorded_data_volume = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        WHERE "CreatedAt" >= '{period_from}' AND "CreatedAt" <= '{period_to}'
+        """,
+        engine
+    ).values[0][0]
+
+    if initial_data_volume != recorded_data_volume:
+        raise Exception(
+            f'Количество записанных данных не совпадает с количеством данных, полученных из API: {initial_data_volume} != {recorded_data_volume}'
+        )
+    print(f'Получено данных: {initial_data_volume}, записано данных: {recorded_data_volume}')
+
 
 def get_data(period_from, period_to, data_type):
 
@@ -373,7 +382,7 @@ def get_data(period_from, period_to, data_type):
     data = {
         "ObjectType": data_type,
         "FieldMatch": {
-            "Data.DateRange": {
+            "Status.CreatedAt": {
                     "PeriodFrom": period_from,
                     "PeriodTo": period_to
             }
@@ -401,16 +410,13 @@ def get_data(period_from, period_to, data_type):
     write_data(data, f'stage_optimatica_{data_type}', period_from, period_to)
 
 
-
-
-
 start_time = time.time()
 
-get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlan')
-# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'QuarterPlan')
+get_data("2021-01-01", "2021-12-31", 'YearPlan')
+# get_data("2021-01-01", "2021-12-31", 'QuarterPlan')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'MinimumBudget')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlanItem')
-# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'QuarterPlanItem')
+# get_data("2021-01-01", "2021-12-31" , 'QuarterPlanItem')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'Placement')
 
 print('Вренмя выполнения', time.time() - start_time)

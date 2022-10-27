@@ -367,6 +367,21 @@ def write_data(data, table, period_from, period_to):
         if_exists='append',
         index=False,
     )
+    
+    initial_data_volume = len(data)
+    recorded_data_volume = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        WHERE "PeriodFrom" >= '{period_from}' AND "PeriodTo" <= '{period_to}'
+        """,
+        engine
+    ).values[0][0]
+
+    if initial_data_volume != recorded_data_volume:
+        raise Exception(
+            f'Количество записанных данных не совпадает с количеством данных, полученных из API: {initial_data_volume} != {recorded_data_volume}'
+        )
+    print(f'Получено данных: {initial_data_volume}, записано данных: {recorded_data_volume}')
 
 #-------------- callable function -----------------
 def get_data(data_type, **context):
