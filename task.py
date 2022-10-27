@@ -433,14 +433,11 @@ def get_data(period_from, period_to, data_type):
 
 start_time = time.time()
 
-# get_data("2022-01-01", "2022-12-31", 'YearPlan')
-# get_data("2022-01-01", "2022-12-31", 'QuarterPlan')
-# get_data("2022-01-01", "2022-12-31", 'MinimumBudget')
-# get_data("2022-01-01", "2022-12-31", 'YearPlanItem')
-# get_data("2022-01-01", "2022-12-31", 'QuarterPlanItem')
-# get_data("2022-01-01", "2022-12-31", 'Placement')
-ex_date = dt.datetime(2000,1,1)
-period_from = f'{ex_date.year-1}-{ex_date.month}-{ex_date.day}'
-period_to = f'{ex_date.year}-{ex_date.month}-{ex_date.day}'
-print(period_from, period_to)
+get_data("2022-01-01", "2022-12-31", 'YearPlan')
+get_data("2022-01-01", "2022-12-31", 'QuarterPlan')
+get_data("2022-01-01", "2022-12-31", 'MinimumBudget')
+get_data("2022-01-01", "2022-12-31", 'YearPlanItem')
+get_data("2022-01-01", "2022-12-31", 'QuarterPlanItem')
+get_data("2022-01-01", "2022-12-31", 'Placement')
+
 print('Вренмя выполнения', time.time() - start_time)
