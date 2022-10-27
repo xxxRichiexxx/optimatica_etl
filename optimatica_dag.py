@@ -427,6 +427,7 @@ def get_data(data_type, **context):
         }
     }
 
+    print('Получение данных за период: ',period_from, period_to)
     response = requests.post(url, headers=headers, verify=False, json=data)
     response.raise_for_status()
 
