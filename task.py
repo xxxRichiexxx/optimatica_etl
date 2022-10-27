@@ -334,6 +334,13 @@ def get_token():
 
 
 def write_data(data, table, period_from, period_to):
+    
+    initial_data_volume_in_dwh = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        """,
+        engine
+    ).values[0][0]
 
     print('Обеспечение идемпотентности')
 
@@ -354,8 +361,8 @@ def write_data(data, table, period_from, period_to):
         if_exists='append',
         index=False,
     )
-
-    initial_data_volume = len(data)
+    
+    data_volume_from_api = len(data)
     recorded_data_volume = pd.read_sql_query(
         f"""
         SELECT COUNT(*) FROM sttgaz.{table}
@@ -364,11 +371,25 @@ def write_data(data, table, period_from, period_to):
         engine
     ).values[0][0]
 
-    if initial_data_volume != recorded_data_volume:
+    if data_volume_from_api != recorded_data_volume:
         raise Exception(
-            f'Количество записанных данных не совпадает с количеством данных, полученных из API: {initial_data_volume} != {recorded_data_volume}'
+            f"""Количество полученных из API данных не совпадает 
+            с количеством записанных данных: {data_volume_from_api} != {recorded_data_volume}"""
         )
-    print(f'Получено данных: {initial_data_volume}, записано данных: {recorded_data_volume}')
+
+    final_data_volume_in_dwh = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        """,
+        engine
+    ).values[0][0]
+
+    if final_data_volume_in_dwh < initial_data_volume_in_dwh:
+        raise Exception(
+            'Количество данных в dwh уменьшилось!'
+        )        
+    print(f'Получено данных: {data_volume_from_api}, записано данных: {recorded_data_volume}')
+    print(f'Было данных: {initial_data_volume_in_dwh}, стало данных: {final_data_volume_in_dwh}')
 
 
 def get_data(period_from, period_to, data_type):
@@ -412,11 +433,11 @@ def get_data(period_from, period_to, data_type):
 
 start_time = time.time()
 
-# get_data("2021-01-01", "2021-12-31", 'YearPlan')
-# get_data("2021-01-01", "2021-12-31", 'QuarterPlan')
-# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'MinimumBudget')
-# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlanItem')
-# get_data("2021-01-01", "2021-12-31" , 'QuarterPlanItem')
-# get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'Placement')
+# get_data("2022-01-01", "2022-12-31", 'YearPlan')
+# get_data("2022-01-01", "2022-12-31", 'QuarterPlan')
+# get_data("2022-01-01", "2022-12-31", 'MinimumBudget')
+# get_data("2022-01-01", "2022-12-31", 'YearPlanItem')
+# get_data("2022-01-01", "2022-12-31", 'QuarterPlanItem')
+# get_data("2022-01-01", "2022-12-31", 'Placement')
 # print(dt.datetime(2000,1,1).date())
 print('Вренмя выполнения', time.time() - start_time)
