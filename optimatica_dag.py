@@ -408,7 +408,7 @@ def write_data(data, table, period_from, period_to):
 def get_data(data_type, **context):
 
     ex_date = context['execution_date']
-    period_from = ex_date.date() - dt.timedelta(year=1)
+    period_from = ex_date.date() - dt.timedelta(days=365)
     period_to = ex_date.date()
 
     url = base_url + 'business-objects/query'
