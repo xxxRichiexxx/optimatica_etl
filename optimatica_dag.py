@@ -21,7 +21,7 @@ engine = sa.create_engine(
     f'vertica+vertica_python://{dwh_con.login}:{ps}@{dwh_con.host}:{dwh_con.port}/sttgaz'
 )
 
-base_url =api_con.host
+base_url = api_con.host
 
 
 data_fields = {
@@ -55,7 +55,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -112,7 +112,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -161,7 +161,7 @@ data_fields = {
             "Data.Data.RegionalSalesManager.Text",
             "Data.Data.TotalBudget.Value",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -293,7 +293,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -326,7 +326,6 @@ data_fields = {
 }
 
 
-
 def get_token():
 
     url = base_url + 'auth'
@@ -341,12 +340,18 @@ def get_token():
 
     try:
         return response.json()["token"]
-    except:
+    except KeyError:
         raise Exception('API не вернуло токен.')
 
 
-
 def write_data(data, table, period_from, period_to):
+    
+    initial_data_volume_in_dwh = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        """,
+        engine
+    ).values[0][0]
 
     print('Обеспечение идемпотентности')
 
@@ -368,7 +373,7 @@ def write_data(data, table, period_from, period_to):
         index=False,
     )
     
-    initial_data_volume = len(data)
+    data_volume_from_api = len(data)
     recorded_data_volume = pd.read_sql_query(
         f"""
         SELECT COUNT(*) FROM sttgaz.{table}
@@ -377,13 +382,29 @@ def write_data(data, table, period_from, period_to):
         engine
     ).values[0][0]
 
-    if initial_data_volume != recorded_data_volume:
+    if data_volume_from_api != recorded_data_volume:
         raise Exception(
-            f'Количество записанных данных не совпадает с количеством данных, полученных из API: {initial_data_volume} != {recorded_data_volume}'
+            f"""Количество полученных из API данных не совпадает 
+            с количеством записанных данных: {data_volume_from_api} != {recorded_data_volume}"""
         )
-    print(f'Получено данных: {initial_data_volume}, записано данных: {recorded_data_volume}')
+
+    final_data_volume_in_dwh = pd.read_sql_query(
+        f"""
+        SELECT COUNT(*) FROM sttgaz.{table}
+        """,
+        engine
+    ).values[0][0]
+
+    if final_data_volume_in_dwh < initial_data_volume_in_dwh:
+        raise Exception(
+            'Количество данных в dwh уменьшилось!'
+        )        
+    print(f'Получено данных: {data_volume_from_api}, записано данных: {recorded_data_volume}')
+    print(f'Было данных: {initial_data_volume_in_dwh}, стало данных: {final_data_volume_in_dwh}')
+
 
 #-------------- callable function -----------------
+
 def get_data(data_type, **context):
 
     ex_date = context['execution_date']
@@ -418,18 +439,21 @@ def get_data(data_type, **context):
     data['ts'] = dt.datetime.now()
 
     if data_type == 'YearPlanItem':
-        data['Plan_Id'] = data['Plan_Id'].apply(lambda value: value[0]['Id'])
+        data['Plan_Id'] = data['Plan_Id'].apply(
+            lambda value: value[0]['Id']
+        )
     elif data_type == 'QuarterPlanItem':
-        data['QuarterPlan_Id'] = data['QuarterPlan_Id'].apply(lambda value: value[0]['Id'])
+        data['QuarterPlan_Id'] = data['QuarterPlan_Id'].apply(
+            lambda value: value[0]['Id']
+        )
 
     print(data)
 
     write_data(data, f'stage_optimatica_{data_type}', period_from, period_to)
 
 
-
-
 #-------------- DAG -----------------
+
 default_args = {
     'owner': 'Швейников Андрей',
     'email': ['shveynikovab@st.tech'],
@@ -480,13 +504,14 @@ with DAG(
             op_kwargs={'data_type': 'QuarterPlanItem'}
         )
 
-        get_placements= PythonOperator(
+        get_placements = PythonOperator(
             task_id='Получение_данных_об_размещениях',
             python_callable=get_data,
             op_kwargs={'data_type': 'Placement'}
         )
 
-        [get_year_plans, get_quarter_plans, get_minimum_budgets, get_year_plan_items, get_quarter_plan_items, get_placements]
+        [get_year_plans, get_quarter_plans, get_minimum_budgets,
+         get_year_plan_items, get_quarter_plan_items, get_placements]
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
