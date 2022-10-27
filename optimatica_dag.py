@@ -353,7 +353,7 @@ def write_data(data, table, period_from, period_to):
     pd.read_sql_query(
         f"""
         DELETE FROM sttgaz.{table}
-        WHERE "PeriodFrom" >= '{period_from}' AND "PeriodTo" <= '{period_to}'
+        WHERE "CreatedAt" >= '{period_from}' AND "CreatedAt" <= '{period_to}'
         """,
         engine
     )
@@ -372,7 +372,7 @@ def write_data(data, table, period_from, period_to):
     recorded_data_volume = pd.read_sql_query(
         f"""
         SELECT COUNT(*) FROM sttgaz.{table}
-        WHERE "PeriodFrom" >= '{period_from}' AND "PeriodTo" <= '{period_to}'
+        WHERE "CreatedAt" >= '{period_from}' AND "CreatedAt" <= '{period_to}'
         """,
         engine
     ).values[0][0]
@@ -387,8 +387,8 @@ def write_data(data, table, period_from, period_to):
 def get_data(data_type, **context):
 
     ex_date = context['execution_date']
-    period_from = f'{ex_date.year}-01-01T00:00:00+03:00'
-    period_to = f'{ex_date.year}-12-31T00:00:00+03:00'
+    period_from = ex_date.date() - dt.timedelta(year=1)
+    period_to = ex_date.date()
 
     url = base_url + 'business-objects/query'
 
@@ -399,7 +399,7 @@ def get_data(data_type, **context):
     data = {
         "ObjectType": data_type,
         "FieldMatch": {
-            "Data.DateRange": {
+            "Status.CreatedAt": {
                     "PeriodFrom": period_from,
                     "PeriodTo": period_to
             }

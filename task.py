@@ -412,11 +412,11 @@ def get_data(period_from, period_to, data_type):
 
 start_time = time.time()
 
-get_data("2021-01-01", "2021-12-31", 'YearPlan')
+# get_data("2021-01-01", "2021-12-31", 'YearPlan')
 # get_data("2021-01-01", "2021-12-31", 'QuarterPlan')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'MinimumBudget')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'YearPlanItem')
 # get_data("2021-01-01", "2021-12-31" , 'QuarterPlanItem')
 # get_data("2021-01-01T00:00:00+03:00", "2021-12-31T00:00:00+03:00" , 'Placement')
-
+# print(dt.datetime(2000,1,1).date())
 print('Вренмя выполнения', time.time() - start_time)
