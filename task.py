@@ -26,6 +26,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.DealerLegalAddress.Text",
             "Data.Data.Year.Text",
@@ -43,7 +44,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -55,6 +56,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "DealerLegalAddress",
             "Year",
@@ -86,6 +88,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.Quarter.Text",
             "Data.Data.DateRange.Value.PeriodFrom",
@@ -100,7 +103,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -112,6 +115,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "Quarter",
             "PeriodFrom",
@@ -140,6 +144,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.Year.Text",
             "Data.Data.DateRange.Value.PeriodFrom",
@@ -149,7 +154,7 @@ data_fields = {
             "Data.Data.RegionalSalesManager.Text",
             "Data.Data.TotalBudget.Value",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -161,6 +166,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "Year",
             "PeriodFrom",
@@ -264,6 +270,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DateRange.Value.PeriodFrom",
             "Data.Data.DateRange.Value.PeriodTo",
             "Data.Data.Specialization.Text",
@@ -281,7 +288,7 @@ data_fields = {
             "WorkFlow.Deadline",
             "WorkFlow.Activity",
         ],
-        'new_name':[
+        'new_name': [
             "Id",
             "Number",
             "ObjectType_Code",
@@ -293,6 +300,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "PeriodFrom",
             "PeriodTo",
             "Specialization",
@@ -425,6 +433,10 @@ def get_data(period_from, period_to, data_type):
         data['Plan_Id'] = data['Plan_Id'].apply(lambda value: value[0]['Id'])
     elif data_type == 'QuarterPlanItem':
         data['QuarterPlan_Id'] = data['QuarterPlan_Id'].apply(lambda value: value[0]['Id'])
+    elif data_type in ('YearPlan', 'QuarterPlan', 'MinimumBudget', 'Placement'):
+        data['Dealer_Id'] = data['Dealer_Id'].apply(
+            lambda value: value[0]['Id']
+        )        
 
     print(data)
 
@@ -433,11 +445,11 @@ def get_data(period_from, period_to, data_type):
 
 start_time = time.time()
 
-get_data("2022-01-01", "2022-12-31", 'YearPlan')
-get_data("2022-01-01", "2022-12-31", 'QuarterPlan')
-get_data("2022-01-01", "2022-12-31", 'MinimumBudget')
-get_data("2022-01-01", "2022-12-31", 'YearPlanItem')
-get_data("2022-01-01", "2022-12-31", 'QuarterPlanItem')
-get_data("2022-01-01", "2022-12-31", 'Placement')
+get_data("2021-01-01", "2022-12-31", 'YearPlan')
+get_data("2021-01-01", "2022-12-31", 'QuarterPlan')
+get_data("2021-01-01", "2022-12-31", 'MinimumBudget')
+get_data("2021-01-01", "2022-12-31", 'YearPlanItem')
+get_data("2021-01-01", "2022-12-31", 'QuarterPlanItem')
+get_data("2021-01-01", "2022-12-31", 'Placement')
 
 print('Вренмя выполнения', time.time() - start_time)

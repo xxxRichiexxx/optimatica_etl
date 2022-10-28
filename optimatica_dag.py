@@ -38,6 +38,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.DealerLegalAddress.Text",
             "Data.Data.Year.Text",
@@ -67,6 +68,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "DealerLegalAddress",
             "Year",
@@ -98,6 +100,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.Quarter.Text",
             "Data.Data.DateRange.Value.PeriodFrom",
@@ -124,6 +127,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "Quarter",
             "PeriodFrom",
@@ -152,6 +156,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DealerCity.Text",
             "Data.Data.Year.Text",
             "Data.Data.DateRange.Value.PeriodFrom",
@@ -173,6 +178,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "DealerCity",
             "Year",
             "PeriodFrom",
@@ -276,6 +282,7 @@ data_fields = {
             "Status.Deleted",
             "Status.Frozen",
             "Data.Data.Dealer.Text",
+            "Data.Data.Dealer.Value",
             "Data.Data.DateRange.Value.PeriodFrom",
             "Data.Data.DateRange.Value.PeriodTo",
             "Data.Data.Specialization.Text",
@@ -305,6 +312,7 @@ data_fields = {
             "Deleted",
             "Frozen",
             "Dealer",
+            "Dealer_Id",
             "PeriodFrom",
             "PeriodTo",
             "Specialization",
@@ -447,6 +455,10 @@ def get_data(data_type, **context):
         data['QuarterPlan_Id'] = data['QuarterPlan_Id'].apply(
             lambda value: value[0]['Id']
         )
+    elif data_type in ('YearPlan', 'QuarterPlan', 'MinimumBudget', 'Placement'):
+        data['Dealer_Id'] = data['Dealer_Id'].apply(
+            lambda value: value[0]['Id']
+        )          
 
     print(data)
 
