@@ -202,9 +202,10 @@ CREATE TABLE sttgaz.stage_optimatica_Placement (
 )
 ORDER BY "Dealer", "PeriodFrom"
 SEGMENTED BY hash("Id") ALL NODES
-PARTITION BY EXTRACT(YEAR FROM PeriodFrom AT TIME ZONE 'Europe/Moscow');
+PARTITION BY EXTRACT(YEAR FROM PeriodFrom);
 
 -------------------DDS---------------------------
+
 
 DROP TABLE IF EXISTS sttgaz.aux_optimatica_dealers;
 
@@ -231,8 +232,8 @@ CREATE TABLE sttgaz.aux_optimatica_year_plans (
     "created_at" TIMESTAMP WITH TIME ZONE,
     "dealer_id" INT REFERENCES sttgaz.aux_optimatica_dealers(id),
     "year" VARCHAR(50),
-    "period_from" TIMESTAMP WITH TIME ZONE,
-    "period_to" TIMESTAMP WITH TIME ZONE,
+    "period_from" DATE,
+    "period_to" DATE,
     "specialization" VARCHAR(300),
     "minimum_budget" REAL,
     "plan_budget" REAL,
@@ -257,8 +258,8 @@ CREATE TABLE sttgaz.aux_optimatica_year_plan_items (
     "deleted" VARCHAR(100),
     "frozen" VARCHAR(100),
     "month"  VARCHAR(30),
-    "period_from" TIMESTAMP WITH TIME ZONE,
-    "period_to" TIMESTAMP WITH TIME ZONE,
+    "period_from" DATE,
+    "period_to" DATE,
     "media" VARCHAR(6000),
     "model" VARCHAR(6000),
     "total_price" REAL,
@@ -279,8 +280,8 @@ CREATE TABLE sttgaz.aux_optimatica_placements (
     "deleted" VARCHAR(100),
     "frozen" VARCHAR(100),
     "dealer_id" INT REFERENCES sttgaz.aux_optimatica_dealers(id),
-    "period_from" TIMESTAMP WITH TIME ZONE,
-    "period_to" TIMESTAMP WITH TIME ZONE,
+    "period_from" DATE,
+    "period_to" DATE,
     "specialization" VARCHAR(300),
     "media" VARCHAR(6000),
     "model" VARCHAR(6000),

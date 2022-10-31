@@ -10,8 +10,8 @@ SELECT
     i.Deleted,
     i.Frozen,
     i.Month,
-    i.PeriodFrom,
-    i.PeriodTo,
+    (i.PeriodFrom AT TIME ZONE 'Europe/Moscow')::date,
+    (i.PeriodTo AT TIME ZONE 'Europe/Moscow')::date,
     i.Media,
     i.Model,
     i.TotalPrice
