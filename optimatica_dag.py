@@ -528,63 +528,41 @@ with DAG(
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
-        pass
+        aux_optimatica_dealers = VerticaOperator(
+            task_id='update_aux_optimatica_dealers',
+            vertica_conn_id='vertica',
+            sql='aux_optimatica_dealers.sql',
+        )
 
-        # aux_mdaudit_regions = VerticaOperator(
-        #     task_id='update_aux_mdaudit_regions',
-        #     vertica_conn_id='vertica',
-        #     sql='aux_mdaudit_region.sql',
-        # )
+        aux_optimatica_year_plans = VerticaOperator(
+            task_id='update_aux_optimatica_year_plans',
+            vertica_conn_id='vertica',
+            sql='aux_optimatica_year_plans.sql',
+        )
 
-        # tables = (
-        #     'aux_mdaudit_shops',
-        #     'aux_mdaudit_divisions',
-        #     'aux_mdaudit_templates',
-        #     'aux_mdaudit_resolvers',
-        # )
+        aux_optimatica_year_plan_items = VerticaOperator(
+            task_id='update_aux_optimatica_year_plan_items',
+            vertica_conn_id='vertica',
+            sql='aux_optimatica_year_plan_items.sql',
+        )
 
-        # parallel_tasks = []
+        aux_optimatica_placements = VerticaOperator(
+            task_id='update_aux_optimatica_placements',
+            vertica_conn_id='vertica',
+            sql='aux_optimatica_placements.sql',
+        )
 
-        # for table in tables:
-        #     parallel_tasks.append(
-        #         VerticaOperator(
-        #             task_id=f'update_{table}',
-        #             vertica_conn_id='vertica',
-        #             sql=f'{table}.sql',
-        #         )
-        #     )
-
-        # aux_mdaudit_checks = VerticaOperator(
-        #     task_id='update_aux_mdaudit_checks',
-        #     vertica_conn_id='vertica',
-        #     sql='aux_mdaudit_checks.sql',
-        # )
-
-        # aux_mdaudit_answers = VerticaOperator(
-        #     task_id='update_aux_mdaudit_answers',
-        #     vertica_conn_id='vertica',
-        #     sql='aux_mdaudit_answers.sql',
-        # )
-
-        # aux_mdaudit_regions >> parallel_tasks >> aux_mdaudit_checks >> aux_mdaudit_answers
+        aux_optimatica_dealers >> aux_optimatica_year_plans >> [aux_optimatica_year_plan_items, aux_optimatica_placements]
 
     with TaskGroup('Формирование_слоя_dm') as data_to_dm:
 
-        pass
+        dm_optimatica_plan_fact = VerticaOperator(
+            task_id='update_dm_optimatica_plan_fact',
+            vertica_conn_id='vertica',
+            sql='dm_optimatica_plan_fact.sql',
+        )
 
-        # dm_mdaudit_detailed = VerticaOperator(
-        #     task_id='update_dm_mdaudit_detailed',
-        #     vertica_conn_id='vertica',
-        #     sql='dm_mdaudit_detailed.sql',
-        # )
-
-        # dm_mdaudit_answers = VerticaOperator(
-        #     task_id='update_dm_mdaudit_answers',
-        #     vertica_conn_id='vertica',
-        #     sql='dm_mdaudit_answers.sql',
-        # )
-
-        # [dm_mdaudit_detailed, dm_mdaudit_answers]
+        dm_optimatica_plan_fact
     
     with TaskGroup('Проверка_данных') as data_check:
 
