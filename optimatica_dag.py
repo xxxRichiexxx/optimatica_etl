@@ -571,22 +571,14 @@ with DAG(
         [dm_optimatica_plan_fact, dm_optimatica_plan_fact_aggregate]
     
     with TaskGroup('Проверка_данных') as data_check:
-
-        pass
          
-        # check_1 = VerticaOperator(
-        #     task_id='checking_for_duplicates',
-        #     vertica_conn_id='vertica',
-        #     sql='checking_for_duplicates.sql'
-        # )
+        check_1 = VerticaOperator(
+            task_id='checking_for_accuracy_of_execution',
+            vertica_conn_id='vertica',
+            sql='checking_for_accuracy_of_execution.sql'
+        )
 
-        # check_2 = VerticaOperator(
-        #     task_id='checking_for_accuracy_of_execution',
-        #     vertica_conn_id='vertica',
-        #     sql='checking_for_accuracy_of_execution.sql'
-        # )
-
-        # [check_1, check_2]
+        check_1
 
     end = DummyOperator(task_id='Конец')
 
