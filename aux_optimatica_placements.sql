@@ -21,4 +21,4 @@ SELECT
     p.State
 FROM sttgaz.stage_optimatica_Placement AS p
 JOIN sttgaz.aux_optimatica_dealers AS d
-    ON p.Dealer_Id = d.dealer_id;
+    ON p.Id = d.dealer_id;
