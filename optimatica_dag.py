@@ -562,13 +562,13 @@ with DAG(
             sql='dm_optimatica_plan_fact.sql',
         )
 
-        dm_optimatica_plan_fact_agregate = VerticaOperator(
-            task_id='update_dm_optimatica_plan_fact_agregate',
+        dm_optimatica_plan_fact_aggregate = VerticaOperator(
+            task_id='update_dm_optimatica_plan_fact_aggregate',
             vertica_conn_id='vertica',
-            sql='dm_optimatica_plan_fact_agregate.sql',
+            sql='dm_optimatica_plan_fact_aggregate.sql',
         )
 
-        [dm_optimatica_plan_fact, dm_optimatica_plan_fact_agregate]
+        [dm_optimatica_plan_fact, dm_optimatica_plan_fact_aggregate]
     
     with TaskGroup('Проверка_данных') as data_check:
 
