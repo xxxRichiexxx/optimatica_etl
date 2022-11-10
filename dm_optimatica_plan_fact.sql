@@ -39,28 +39,38 @@ WITH
 		FROM sttgaz.aux_optimatica_year_plan_items 		AS i
 		JOIN sttgaz.aux_optimatica_year_plans 			AS p 
 			ON i.plan_id =p.id 
+	),
+	placements_items AS
+	(
+		SELECT
+			i.id 												AS item_id,
+			COALESCE(i.plan_id, p.plan_id)						AS plan_id,
+			COALESCE(i.dealer_id, p.dealer_id) 					AS dealer_id,
+			COALESCE(i.deleted, p.deleted)						AS deleted,
+			COALESCE(i.frozen, p.frozen)						AS frozen,
+			COALESCE(i.period_from, p.month)					AS month,
+			COALESCE(i.period_from, p.period_from) 				AS period_from,
+			COALESCE(i.period_to, p.period_to)					AS period_to,
+			COALESCE(i.media, p.media)							AS media,
+			COALESCE(i.model, p.model)							AS model,
+			i.total_price										AS plan_price,
+			p.id												AS placement_id,
+			p.site, 											
+			p.placement_price,
+			p.state,
+			COUNT(*) OVER(PARTITION BY item_id)					AS placements_cnt,
+			plan_price / COUNT(*) OVER(PARTITION BY item_id)	AS plan_per_placements_cnt
+		FROM items 				AS i
+		FULL JOIN placements 	AS p 
+			ON i.dealer_id = p.dealer_id
+			AND i.media = p.media
+			AND i.model = p.model
+			AND i.period_from = p.month
 	)
 SELECT
-	i.id 												AS item_id,
-	COALESCE(i.plan_id, p.plan_id)						AS plan_id,
-	COALESCE(i.dealer_id, p.dealer_id) 					AS dealer_id,
-	COALESCE(i.deleted, p.deleted)						AS deleted,
-	COALESCE(i.frozen, p.frozen)						AS frozen,
-	COALESCE(i.period_from, p.month)					AS month,
-	COALESCE(i.period_from, p.period_from) 				AS period_from,
-	COALESCE(i.period_to, p.period_to)					AS period_to,
-	COALESCE(i.media, p.media)							AS media,
-	COALESCE(i.model, p.model)							AS model,
-	i.total_price										AS plan_price,
-	p.id												AS placement_id,
-	p.site, 											
-	p.placement_price,
-	p.state,
-	COUNT(*) OVER(PARTITION BY item_id)					AS placements_cnt,
-	plan_price / COUNT(*) OVER(PARTITION BY item_id)	AS plan_per_placements_cnt
-FROM items 				AS i
-FULL JOIN placements 	AS p 
-	ON i.dealer_id = p.dealer_id
- 	AND i.media = p.media
- 	AND i.model = p.model
- 	AND i.period_from = p.month
+	placements_items.*,
+	d.dealer_name,
+	d.dealer_city
+FROM placements_items
+LEFT JOIN sttgaz.aux_optimatica_dealers AS d
+ON placements_items.dealer_id = d.id;

@@ -12,9 +12,7 @@ SELECT
 	model,
 	plan_price,
 	SUM(placement_price) AS fact_rpice
-FROM sttgaz.dm_optimatica_plan_fact AS pf
-LEFT JOIN sttgaz.aux_optimatica_dealers AS d
-	ON pf.dealer_id = d.id 
+FROM sttgaz.dm_optimatica_plan_fact
 GROUP BY
 	item_id,
 	plan_id,
