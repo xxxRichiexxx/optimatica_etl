@@ -1,7 +1,7 @@
 INSERT INTO sttgaz.aux_optimatica_calendar ("month")
 SELECT * FROM sttgaz.aux_optimatica_calendar
 UNION
-SELECT TIMESTAMPADD(MONTH, number, '{{year}}-01-01')::date AS "month"
+SELECT TIMESTAMPADD(MONTH, number, '{{execution_date.year - 1}}-01-01')::date AS "month"
 FROM 
 	(
 	SELECT 0 AS number
