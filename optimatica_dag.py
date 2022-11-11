@@ -552,7 +552,16 @@ with DAG(
             sql='aux_optimatica_placements.sql',
         )
 
-        aux_optimatica_dealers >> aux_optimatica_year_plans >> [aux_optimatica_year_plan_items, aux_optimatica_placements]
+        aux_optimatica_calendar = VerticaOperator(
+            task_id='update_aux_optimatica_calendar',
+            vertica_conn_id='vertica',
+            sql='aux_optimatica_calendar.sql',
+            parameters={"year": f'{{execution_date.year - 1}}'}
+        )
+
+        aux_optimatica_dealers >> aux_optimatica_year_plans >> [
+            aux_optimatica_year_plan_items, aux_optimatica_placements
+        ] >> aux_optimatica_calendar
 
     with TaskGroup('Формирование_слоя_dm') as data_to_dm:
 

@@ -297,3 +297,10 @@ CREATE TABLE sttgaz.aux_optimatica_placements (
 ORDER BY "dealer_id", "media", "model"
 SEGMENTED BY hash("id") ALL NODES
 PARTITION BY "dealer_id";
+
+
+DROP TABLE IF EXISTS sttgaz.aux_optimatica_calendar;
+
+CREATE TABLE sttgaz.aux_optimatica_calendar ( 
+     "month"      DATE
+);
