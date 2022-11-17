@@ -366,7 +366,8 @@ def write_data(data, table, period_from, period_to):
     pd.read_sql_query(
         f"""
         DELETE FROM sttgaz.{table}
-        WHERE "CreatedAt"::date >= '{period_from}' AND "CreatedAt"::date <= '{period_to}'
+        WHERE (CreatedAt at time zone 'Europe/Moscow')::date >= '{period_from}'
+            AND (CreatedAt at time zone 'Europe/Moscow')::date <= '{period_to}'
         """,
         engine
     )
