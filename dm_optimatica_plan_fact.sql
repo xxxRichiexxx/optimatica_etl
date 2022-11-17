@@ -13,10 +13,10 @@ WITH
 				THEN (DATEDIFF(day, c.month, LAST_DAY(c.month)) + 1)
 			WHEN (c.month > p.period_from AND LAST_DAY(c.month) = p.period_to)
 				THEN (DATEDIFF(day, c.month, LAST_DAY(c.month)) + 1)
-			WHEN (c.month > p.period_from AND c.month < p.period_to AND LAST_DAY(c.month) > p.period_to)
+			WHEN (c.month > p.period_from AND c.month <= p.period_to AND LAST_DAY(c.month) > p.period_to)
 				THEN (DATEDIFF(day, c.month, p.period_to) + 1)
-			WHEN (c.month < p.period_from AND LAST_DAY(c.month) > p.period_from AND LAST_DAY(c.month) < p.period_to)
-				THEN (DATEDIFF(day, p.period_from, LAST_DAY(c.month)))
+			WHEN (c.month < p.period_from AND LAST_DAY(c.month) >= p.period_from AND LAST_DAY(c.month) < p.period_to)
+				THEN (DATEDIFF(day, p.period_from, LAST_DAY(c.month) + 1))
 		END AS days_count,
 		(p.price / (DATEDIFF(day, p.period_from, p.period_to) + 1)) * days_count AS placement_price
 		FROM sttgaz.aux_optimatica_placements AS p
@@ -24,8 +24,8 @@ WITH
 			ON (c.month <= p.period_from AND LAST_DAY(c.month) >= p.period_to)
 			OR (c.month >= p.period_from AND LAST_DAY(c.month) < p.period_to)
 			OR (c.month > p.period_from AND LAST_DAY(c.month) = p.period_to)
-			OR (c.month > p.period_from AND c.month < p.period_to AND LAST_DAY(c.month) > p.period_to)
-			OR (c.month < p.period_from AND LAST_DAY(c.month) > p.period_from AND LAST_DAY(c.month) < p.period_to)
+			OR (c.month > p.period_from AND c.month <= p.period_to AND LAST_DAY(c.month) > p.period_to)
+			OR (c.month < p.period_from AND LAST_DAY(c.month) >= p.period_from AND LAST_DAY(c.month) < p.period_to)
 		LEFT JOIN sttgaz.aux_optimatica_year_plans AS plans 
 			ON p.dealer_id = plans.dealer_id 
 			AND (p.period_from >= plans.period_from AND p.period_to <= plans.period_to)
