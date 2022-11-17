@@ -386,7 +386,8 @@ def write_data(data, table, period_from, period_to):
     recorded_data_volume = pd.read_sql_query(
         f"""
         SELECT COUNT(*) FROM sttgaz.{table}
-        WHERE "CreatedAt"::date >= '{period_from}' AND "CreatedAt"::date <= '{period_to}'
+        WHERE (CreatedAt at time zone 'Europe/Moscow') >= '{period_from}'
+            AND (CreatedAt at time zone 'Europe/Moscow') <= '{period_to}'
         """,
         engine
     ).values[0][0]
