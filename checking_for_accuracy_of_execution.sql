@@ -1,13 +1,13 @@
 INSERT INTO sttgaz.stage_checks (table_name, check_name, ts, check_result)
 WITH plan_price_result AS(
 	SELECT SUM(plan_price)
-	FROM dm_optimatica_plan_fact_aggregate
+	FROM sttgaz.dm_optimatica_plan_fact_aggregate
 	WHERE dealer_name = 'Авторитэйл Регион, Казань'
 		AND EXTRACT(YEAR FROM "month") = 2022
 ),
 fact_rpice_result AS(
 	SELECT SUM(fact_rpice)
-	FROM dm_optimatica_plan_fact_aggregate
+	FROM sttgaz.dm_optimatica_plan_fact_aggregate
 	WHERE dealer_name = 'Авторитэйл Регион, Казань'
 		AND EXTRACT(YEAR FROM "month") = 2022
 ),
