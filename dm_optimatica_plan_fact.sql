@@ -19,14 +19,14 @@ WITH
 				THEN (DATEDIFF(day, p.period_from, LAST_DAY(c.month) + 1))
 		END AS days_count,
 		(p.price / (DATEDIFF(day, p.period_from, p.period_to) + 1)) * days_count AS placement_price
-		FROM sttgaz.aux_optimatica_placements AS p
-		LEFT JOIN sttgaz.aux_optimatica_calendar AS c
+		FROM sttgaz.dds_optimatica_placements AS p
+		LEFT JOIN sttgaz.dds_optimatica_calendar AS c
 			ON (c.month <= p.period_from AND LAST_DAY(c.month) >= p.period_to)
 			OR (c.month >= p.period_from AND LAST_DAY(c.month) < p.period_to)
 			OR (c.month > p.period_from AND LAST_DAY(c.month) = p.period_to)
 			OR (c.month > p.period_from AND c.month <= p.period_to AND LAST_DAY(c.month) > p.period_to)
 			OR (c.month < p.period_from AND LAST_DAY(c.month) >= p.period_from AND LAST_DAY(c.month) < p.period_to)
-		LEFT JOIN sttgaz.aux_optimatica_year_plans AS plans 
+		LEFT JOIN sttgaz.dds_optimatica_year_plans AS plans 
 			ON p.dealer_id = plans.dealer_id 
 			AND (p.period_from >= plans.period_from AND p.period_to <= plans.period_to)
 			AND p.specialization = plans.specialization
@@ -36,8 +36,8 @@ WITH
 	items AS
 	(
 		SELECT i.*, p.dealer_id 
-		FROM sttgaz.aux_optimatica_year_plan_items 		AS i
-		JOIN sttgaz.aux_optimatica_year_plans 			AS p 
+		FROM sttgaz.dds_optimatica_year_plan_items 		AS i
+		JOIN sttgaz.dds_optimatica_year_plans 			AS p 
 			ON i.plan_id =p.id 
 	),
 	placements_items AS
@@ -72,5 +72,5 @@ SELECT
 	d.dealer_name,
 	d.dealer_city
 FROM placements_items
-LEFT JOIN sttgaz.aux_optimatica_dealers AS d
+LEFT JOIN sttgaz.dds_optimatica_dealers AS d
 ON placements_items.dealer_id = d.id;

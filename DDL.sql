@@ -202,7 +202,7 @@ CREATE TABLE sttgaz.stage_optimatica_Placement (
 )
 ORDER BY "Dealer", "PeriodFrom"
 SEGMENTED BY hash("Id") ALL NODES
-PARTITION BY EXTRACT(YEAR FROM PeriodFrom);
+PARTITION BY EXTRACT(YEAR FROM PeriodFrom AT TIME ZONE 'Europe/Moscow');
 
 -------------------DDS---------------------------
 
