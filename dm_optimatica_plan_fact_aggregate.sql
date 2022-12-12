@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW dm_optimatica_plan_fact_aggregate AS
+CREATE OR REPLACE VIEW sttgaz.dm_optimatica_plan_fact_aggregate AS
 SELECT
 	item_id,
 	plan_id,
