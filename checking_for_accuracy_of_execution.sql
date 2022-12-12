@@ -13,16 +13,16 @@ fact_rpice_result AS(
 ),
 plan_true AS (
 	SELECT plan_budget
-	FROM sttgaz.aux_optimatica_year_plans AS p
-	LEFT JOIN sttgaz.aux_optimatica_dealers AS d
+	FROM sttgaz.dds_optimatica_year_plans AS p
+	LEFT JOIN sttgaz.dds_optimatica_dealers AS d
 		ON p.dealer_id = d.id
 	WHERE dealer_name = 'Авторитэйл Регион, Казань'
 		AND "year" = 2022
 ),
 fact_true AS (
 	SELECT fact_budget
-	FROM sttgaz.aux_optimatica_year_plans AS p
-	LEFT JOIN sttgaz.aux_optimatica_dealers AS d
+	FROM sttgaz.dds_optimatica_year_plans AS p
+	LEFT JOIN sttgaz.dds_optimatica_dealers AS d
 		ON p.dealer_id = d.id
 	WHERE dealer_name = 'Авторитэйл Регион, Казань'
 		AND "year" = 2022

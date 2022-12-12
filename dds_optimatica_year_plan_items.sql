@@ -1,6 +1,6 @@
-TRUNCATE TABLE sttgaz.aux_optimatica_year_plan_items;
+TRUNCATE TABLE sttgaz.dds_optimatica_year_plan_items;
 
-INSERT INTO sttgaz.aux_optimatica_year_plan_items
+INSERT INTO sttgaz.dds_optimatica_year_plan_items
 ("item_id", "plan_id", "created_at", "deleted", "frozen",
 "month", "period_from", "period_to", "media", "model", "total_price")
 SELECT
@@ -16,5 +16,5 @@ SELECT
     i.Model,
     i.TotalPrice
 FROM sttgaz.stage_optimatica_YearPlanItem AS i 
-JOIN sttgaz.aux_optimatica_year_plans AS p
+JOIN sttgaz.dds_optimatica_year_plans AS p
     ON i.Plan_Id = p.plan_id;

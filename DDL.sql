@@ -207,9 +207,9 @@ PARTITION BY EXTRACT(YEAR FROM PeriodFrom);
 -------------------DDS---------------------------
 
 
-DROP TABLE IF EXISTS sttgaz.aux_optimatica_dealers;
+DROP TABLE IF EXISTS sttgaz.dds_optimatica_dealers;
 
-CREATE TABLE sttgaz.aux_optimatica_dealers (
+CREATE TABLE sttgaz.dds_optimatica_dealers (
     "id" AUTO_INCREMENT PRIMARY KEY,
     "dealer_name" VARCHAR(6000),
     "dealer_id" VARCHAR(100),
@@ -222,15 +222,15 @@ ORDER BY "id", "dealer_id"
 SEGMENTED BY hash("id") ALL NODES;
 
 
-DROP TABLE IF EXISTS sttgaz.aux_optimatica_year_plans;
+DROP TABLE IF EXISTS sttgaz.dds_optimatica_year_plans;
 
-CREATE TABLE sttgaz.aux_optimatica_year_plans (
+CREATE TABLE sttgaz.dds_optimatica_year_plans (
     "id" AUTO_INCREMENT PRIMARY KEY,
     "plan_id" VARCHAR(100) NOT NULL,
     "deleted" VARCHAR(100),
     "frozen" VARCHAR(100),
     "created_at" TIMESTAMP WITH TIME ZONE,
-    "dealer_id" INT REFERENCES sttgaz.aux_optimatica_dealers(id),
+    "dealer_id" INT REFERENCES sttgaz.dds_optimatica_dealers(id),
     "year" VARCHAR(50),
     "period_from" DATE,
     "period_to" DATE,
@@ -248,12 +248,12 @@ SEGMENTED BY hash("id") ALL NODES
 PARTITION BY "year";
 
 
-DROP TABLE IF EXISTS sttgaz.aux_optimatica_year_plan_items;
+DROP TABLE IF EXISTS sttgaz.dds_optimatica_year_plan_items;
 
-CREATE TABLE sttgaz.aux_optimatica_year_plan_items (
+CREATE TABLE sttgaz.dds_optimatica_year_plan_items (
     "id" AUTO_INCREMENT PRIMARY KEY,
     "item_id" VARCHAR(100) NOT NULL,
-    "plan_id"  INT REFERENCES sttgaz.aux_optimatica_year_plans(id),
+    "plan_id"  INT REFERENCES sttgaz.dds_optimatica_year_plans(id),
     "created_at" TIMESTAMP WITH TIME ZONE,
     "deleted" VARCHAR(100),
     "frozen" VARCHAR(100),
@@ -271,15 +271,15 @@ SEGMENTED BY hash("id") ALL NODES
 PARTITION BY "month";
 
 
-DROP TABLE IF EXISTS sttgaz.aux_optimatica_placements;
+DROP TABLE IF EXISTS sttgaz.dds_optimatica_placements;
 
-CREATE TABLE sttgaz.aux_optimatica_placements (
+CREATE TABLE sttgaz.dds_optimatica_placements (
     "id" AUTO_INCREMENT PRIMARY KEY,
     "placement_id" VARCHAR(100) NOT NULL,
     "created_at" TIMESTAMP WITH TIME ZONE,
     "deleted" VARCHAR(100),
     "frozen" VARCHAR(100),
-    "dealer_id" INT REFERENCES sttgaz.aux_optimatica_dealers(id),
+    "dealer_id" INT REFERENCES sttgaz.dds_optimatica_dealers(id),
     "period_from" DATE,
     "period_to" DATE,
     "specialization" VARCHAR(300),
@@ -299,8 +299,8 @@ SEGMENTED BY hash("id") ALL NODES
 PARTITION BY "dealer_id";
 
 
-DROP TABLE IF EXISTS sttgaz.aux_optimatica_calendar;
+DROP TABLE IF EXISTS sttgaz.dds_optimatica_calendar;
 
-CREATE TABLE sttgaz.aux_optimatica_calendar ( 
+CREATE TABLE sttgaz.dds_optimatica_calendar ( 
      "month"      DATE
 );

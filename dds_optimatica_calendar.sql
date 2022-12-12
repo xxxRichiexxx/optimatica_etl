@@ -3,7 +3,7 @@ CREATE LOCAL TEMPORARY TABLE calendar_new_data (
 );
 
 INSERT INTO calendar_new_data ("month")
-SELECT * FROM sttgaz.aux_optimatica_calendar
+SELECT * FROM sttgaz.dds_optimatica_calendar
 UNION
 SELECT TIMESTAMPADD(MONTH, number, '{{execution_date.year - 1}}-01-01')::date AS "month"
 FROM 
@@ -82,9 +82,9 @@ FROM
 	) AS val(number)
 ORDER  BY "month";
 
-DELETE FROM sttgaz.aux_optimatica_calendar;
+DELETE FROM sttgaz.dds_optimatica_calendar;
 
-INSERT INTO sttgaz.aux_optimatica_calendar
+INSERT INTO sttgaz.dds_optimatica_calendar
 SELECT * FROM calendar_new_data;
 
 COMMIT;

@@ -353,7 +353,7 @@ def get_token():
 
 
 def write_data(data, table, period_from, period_to):
-    
+
     initial_data_volume_in_dwh = pd.read_sql_query(
         f"""
         SELECT COUNT(*) FROM sttgaz.{table}
@@ -381,7 +381,7 @@ def write_data(data, table, period_from, period_to):
         if_exists='append',
         index=False,
     )
-    
+
     data_volume_from_api = len(data)
     recorded_data_volume = pd.read_sql_query(
         f"""
@@ -394,8 +394,9 @@ def write_data(data, table, period_from, period_to):
 
     if data_volume_from_api != recorded_data_volume:
         raise Exception(
-            f"""Количество полученных из API данных не совпадает 
-            с количеством записанных данных: {data_volume_from_api} != {recorded_data_volume}"""
+            f"""Количество полученных из API данных не совпадает
+            с количеством записанных данных:
+            {data_volume_from_api} != {recorded_data_volume}"""
         )
 
     final_data_volume_in_dwh = pd.read_sql_query(
@@ -408,7 +409,7 @@ def write_data(data, table, period_from, period_to):
     if final_data_volume_in_dwh < initial_data_volume_in_dwh:
         raise Exception(
             'Количество данных в dwh уменьшилось!'
-        )        
+        )
     print(f'Получено данных: {data_volume_from_api}, записано данных: {recorded_data_volume}')
     print(f'Было данных: {initial_data_volume_in_dwh}, стало данных: {final_data_volume_in_dwh}')
 
@@ -437,7 +438,7 @@ def get_data(data_type, **context):
         }
     }
 
-    print('Получение данных за период: ',period_from, period_to)
+    print('Получение данных за период: ', period_from, period_to)
     response = requests.post(url, headers=headers, verify=False, json=data)
     response.raise_for_status()
 
@@ -460,7 +461,7 @@ def get_data(data_type, **context):
     elif data_type in ('YearPlan', 'QuarterPlan', 'MinimumBudget', 'Placement'):
         data['Dealer_Id'] = data['Dealer_Id'].apply(
             lambda value: value[0]['Id']
-        )          
+        )
 
     print(data)
 
@@ -489,80 +490,59 @@ with DAG(
 
     with TaskGroup('Загрузка_данных_в_stage_слой') as data_to_stage:
 
-        get_year_plans = PythonOperator(
-            task_id='Получение_данных_об_годовых_планах',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'YearPlan'}
+        tasks = []
+        data_types = (
+            'YearPlan',
+            'QuarterPlan',
+            'MinimumBudget',
+            'YearPlanItem',
+            'QuarterPlanItem',
+            'Placement',
         )
-
-        get_quarter_plans = PythonOperator(
-            task_id='Получение_данных_об_квартальных_планах',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'QuarterPlan'}
-        )
-
-        get_minimum_budgets = PythonOperator(
-            task_id='Получение_данных_об_минимальных_бюджетах',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'MinimumBudget'}
-        )
-
-        get_year_plan_items = PythonOperator(
-            task_id='Получение_данных_об_элементах_годового_плана',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'YearPlanItem'}
-        )
-
-        get_quarter_plan_items = PythonOperator(
-            task_id='Получение_данных_об_элементах_квартального_плана',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'QuarterPlanItem'}
-        )
-
-        get_placements = PythonOperator(
-            task_id='Получение_данных_об_размещениях',
-            python_callable=get_data,
-            op_kwargs={'data_type': 'Placement'}
-        )
-
-        [get_year_plans, get_quarter_plans, get_minimum_budgets,
-         get_year_plan_items, get_quarter_plan_items, get_placements]
+        for data in data_types:
+            tasks.append(
+                PythonOperator(
+                    task_id=f'Получение_данных_{data}',
+                    python_callable=get_data,
+                    op_kwargs={'data_type': data},
+                )
+            )
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
-        aux_optimatica_dealers = VerticaOperator(
-            task_id='update_aux_optimatica_dealers',
+        dds_optimatica_dealers = VerticaOperator(
+            task_id='update_dds_optimatica_dealers',
             vertica_conn_id='vertica',
-            sql='aux_optimatica_dealers.sql',
+            sql='dds_optimatica_dealers.sql',
         )
 
-        aux_optimatica_year_plans = VerticaOperator(
-            task_id='update_aux_optimatica_year_plans',
+        dds_optimatica_year_plans = VerticaOperator(
+            task_id='update_dds_optimatica_year_plans',
             vertica_conn_id='vertica',
-            sql='aux_optimatica_year_plans.sql',
+            sql='dds_optimatica_year_plans.sql',
         )
 
-        aux_optimatica_year_plan_items = VerticaOperator(
-            task_id='update_aux_optimatica_year_plan_items',
+        dds_optimatica_year_plan_items = VerticaOperator(
+            task_id='update_dds_optimatica_year_plan_items',
             vertica_conn_id='vertica',
-            sql='aux_optimatica_year_plan_items.sql',
+            sql='dds_optimatica_year_plan_items.sql',
         )
 
-        aux_optimatica_placements = VerticaOperator(
-            task_id='update_aux_optimatica_placements',
+        dds_optimatica_placements = VerticaOperator(
+            task_id='update_dds_optimatica_placements',
             vertica_conn_id='vertica',
-            sql='aux_optimatica_placements.sql',
+            sql='dds_optimatica_placements.sql',
         )
 
-        aux_optimatica_calendar = VerticaOperator(
-            task_id='update_aux_optimatica_calendar',
+        dds_optimatica_calendar = VerticaOperator(
+            task_id='update_dds_optimatica_calendar',
             vertica_conn_id='vertica',
-            sql='aux_optimatica_calendar.sql',
+            sql='dds_optimatica_calendar.sql',
         )
 
-        aux_optimatica_dealers >> aux_optimatica_year_plans >> [
-            aux_optimatica_year_plan_items, aux_optimatica_placements
-        ] >> aux_optimatica_calendar
+        dds_optimatica_dealers >> dds_optimatica_year_plans >> [
+            dds_optimatica_year_plan_items, dds_optimatica_placements
+        ] >> dds_optimatica_calendar
 
     with TaskGroup('Формирование_слоя_dm') as data_to_dm:
 
@@ -579,9 +559,9 @@ with DAG(
         )
 
         [dm_optimatica_plan_fact, dm_optimatica_plan_fact_aggregate]
-    
+
     with TaskGroup('Проверка_данных') as data_check:
-         
+
         check_1 = VerticaOperator(
             task_id='checking_for_accuracy_of_execution',
             vertica_conn_id='vertica',

@@ -1,6 +1,6 @@
-TRUNCATE TABLE sttgaz.aux_optimatica_dealers;
+TRUNCATE TABLE sttgaz.dds_optimatica_dealers;
 
-INSERT INTO sttgaz.aux_optimatica_dealers
+INSERT INTO sttgaz.dds_optimatica_dealers
 ("dealer_name", "dealer_id", "dealer_city", "dealer_address")
 SELECT DISTINCT
     "Dealer",

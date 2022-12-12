@@ -1,6 +1,6 @@
-TRUNCATE TABLE sttgaz.aux_optimatica_year_plans;
+TRUNCATE TABLE sttgaz.dds_optimatica_year_plans;
 
-INSERT INTO sttgaz.aux_optimatica_year_plans
+INSERT INTO sttgaz.dds_optimatica_year_plans
 ("plan_id", "deleted", "frozen", "created_at", "dealer_id", "year", "period_from", 
 "period_to", "specialization", "minimum_budget", "plan_budget", "fact_budget", "budget", "state")
 SELECT
@@ -19,5 +19,5 @@ SELECT
     p.Budget            AS budget,
     p.State             AS state
 FROM sttgaz.stage_optimatica_YearPlan AS p
-JOIN sttgaz.aux_optimatica_dealers AS d
+JOIN sttgaz.dds_optimatica_dealers AS d
     ON p.Dealer_Id = d.dealer_id;

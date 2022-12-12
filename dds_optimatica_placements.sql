@@ -1,6 +1,6 @@
-TRUNCATE TABLE sttgaz.aux_optimatica_placements;
+TRUNCATE TABLE sttgaz.dds_optimatica_placements;
 
-INSERT INTO sttgaz.aux_optimatica_placements
+INSERT INTO sttgaz.dds_optimatica_placements
 ("placement_id","created_at","deleted","frozen","dealer_id",
 "period_from","period_to","specialization","media","model","site",
 "description","publish_count","measure_unit","price","state")
@@ -22,5 +22,5 @@ SELECT
     p.Price,
     p.State
 FROM sttgaz.stage_optimatica_Placement AS p
-JOIN sttgaz.aux_optimatica_dealers AS d
+JOIN sttgaz.dds_optimatica_dealers AS d
     ON p.Dealer_Id = d.dealer_id;
