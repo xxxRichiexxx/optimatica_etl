@@ -507,6 +507,8 @@ with DAG(
                     op_kwargs={'data_type': data},
                 )
             )
+        
+        tasks
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
